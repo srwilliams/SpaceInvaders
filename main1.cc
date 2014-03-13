@@ -3,9 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctime>
+
 #include "allegro.h"
 #include "classes.h"
-
 
 
 int main(void) {
@@ -24,10 +25,23 @@ int main(void) {
 
     set_color_depth(8);
     
-    Invader invader (20);
+    //Invader invader (20);
     Player player (3);
-    Bullet bullet;
-    Guard guard (30);
+    Guard guard (70);
+
+
+    ///////// Initialize Invaders //////////////////
+    Invader *invaderArmy[5];
+    Invader *invaderRow1[12];    // there are 11 invaders in a row:
+    Invader *invaderRow2[12];    // two rows of 10-point invaders
+    Invader *invaderRow3[12];    // two rows of 20-point invaders
+    Invader *invaderRow4[12];    // and one row of 40-point invaders
+    Invader *invaderRow5[12];
+
+    for (int i=0; i<12, i++) {
+
+
+
 
     // positions for player sprite //
     int x = WIDTH/2 - (player.plyr)->w/2;
@@ -39,13 +53,11 @@ int main(void) {
     int framedelay = 20;
     int framecount = 0;
 
-    // Load alien sprites //
-    //alien[0] = load_bitmap("sprite1.bmp", NULL);
-    //alien[1] = load_bitmap("sprite2.bmp", NULL);
 
     // positions for alien sprite //
-    int a = 0;
+    int a = 20;
     int b = 30;
+    //////////////////////////////////////////////
 
     
     // start while !esc loop //
@@ -59,6 +71,8 @@ int main(void) {
 
         rectfill(screen, x, y, x+(player.plyr->w), y+(player.plyr->h), 0);
         rectfill(screen, a, b, a+invader.invdr[0]->w, b+invader.invdr[0]->h, 0);
+        
+        // Player movement //
 
         if (key[KEY_RIGHT]) {
             x+=2;
@@ -68,8 +82,14 @@ int main(void) {
             x-=2;
             if (x<2) x=2;
         }
+        /////////////////////
 
-        if (a <WIDTH - (2+invader.invdr[0]->w)) a+=2;
+        // Animations for the invaders //
+
+        if (a <WIDTH - (2+invader.invdr[0]->w)) {
+            a+=2;
+            invader.x = a;
+        }
 
         if (framecount++ > framedelay) {
             framecount = 0;
@@ -78,36 +98,31 @@ int main(void) {
                 curframe = 0;
             }
         }
+        ///////////////////////////////////
+              
 
+        
         // Let's try the shooting thing now //
-        if (key[KEY_SPACE]) {
-            playershoot(bullet, guard, x, y);
-            for (y>=1; y-=2;) {
-                draw_sprite(screen, bullet.bllt, x, y);
-                if ((guard.x == bullet.x) && (guard.y == bullet.y)) {
-                    guard.health -=20;
-                    if (guard.health ==80) guard.grd = load_bitmap("guard80.bmp", NULL);
-                    else if (guard.health ==60) guard.grd = load_bitmap("guard60.bmp", NULL);
-                    else if (guard.health ==40) guard.grd = load_bitmap("guard40.bmp", NULL);
-                    else if (guard.health ==20) guard.grd = load_bitmap("guard20.bmp", NULL);
-                    else destroy_bitmap(guard.grd);
-                }
-                else if ((bullet.x == invader.x) && (bullet.y == invader.y)) {
-                    BITMAP *boom = load_bitmap("boom.bmp", NULL);
-                    draw_sprite(screen, boom, invader.x, invader.y);
-                    //insert timer here///
-                    destroy_bitmap(boom);
-                    player.score += invader.pointValue;
-                }
-                else if (bullet.y <=2) destroy_bitmap(bullet.bllt);
-            }
+
+        Bullet bullet;
+        if (key[KEY_SPACE]) { 
+            bullet.i = x;
+            bullet.j = y;
         }
 
+        bullet.j -=2;
+
+        if (bullet.j == 0) {
+            destroy_bitmap(bullet.bllt);
+        }
+        ///////////////////////////////////////
 
 
 
         draw_sprite(screen, player.plyr, x, y);
         draw_sprite(screen, invader.invdr[curframe], invader.x, invader.y);
+        draw_sprite(screen, guard.grd, guard.x, guard.y);
+        draw_sprite(screen, bullet.bllt, bullet.i, bullet.j);
         rest(1);
     }
 
