@@ -1,10 +1,11 @@
 //Classes for space invaders code
-//classes.cc
+//classes.h
 
 #ifndef _CLASSES_H
 #define _CLASSES_H
 
 #include <stdlib.h>
+#include <ctime>
 #include "allegro.h"
 
 #define MODE GFX_AUTODETECT_WINDOWED
@@ -13,6 +14,11 @@
 
 //////////// General ///////////////////
 
+void timer(clock_t sec) {
+    clock_t startTime = clock();
+    clock_t endTime = sec*1000 + startTime;
+    while(clock() != endTime);
+}
 
 
 //////////// Enemies ///////////////////
@@ -24,6 +30,7 @@ public:
     int pointValue;
     BITMAP *invdr[3];
     Invader (int);
+    void move(int);
 };
 
 Invader:: Invader (int val) {
@@ -51,16 +58,16 @@ Player::Player(int life) {
     x = 328;
     y = 430;
     score = 0;
-    plyr = load_bitmap("test.bmp", NULL);
+    plyr = load_bitmap("ship.bmp", NULL);
 
 }
 
 /////////////// Bullet ///////////////
 class Bullet {
 public:
-    int x;
-    int y;
-    BITMAP *bllt;
+    int i;
+    int j;
+    BITMAP *bllt = load_bitmap("bullet.bmp", NULL);
 };
 
 
@@ -79,16 +86,11 @@ public:
 
 Guard::Guard(int pos) {
     x = pos;
-    y = 400;
+    y = 340;
     health = 100;
     grd =load_bitmap("guard100.bmp", NULL);
 }
 
-void playershoot(Bullet bullet, Guard guard, int i, int j) {
-    bullet.bllt =load_bitmap("bullet.bmp", NULL);
-    bullet.x = i;
-    bullet.y = j;
-}
 
 
 
